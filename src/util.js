@@ -6,6 +6,7 @@
       if (Number(el.WorkDays) > max) {
         max = el.WorkDays;
         maxObj = el;
+        
       }
     });
     arrMax.push(maxObj);
@@ -48,5 +49,15 @@
     });
     return newArr;
   };
+ 
+  function getKeysObject(obj){
+    let arr =[];
+    for (let i = 0; i < Object.keys(obj).length; i++) {
+      let el = Object.keys(obj)[i];
+      arr.push(el)
+    }
+    return arr;
+  
+  }
 
-  export {fineMax, getMaxDays, createPropertyWorkDays}
+  export {fineMax, getMaxDays, createPropertyWorkDays, getKeysObject}

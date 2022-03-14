@@ -3,7 +3,6 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { makeStyles } from "@mui/styles";
 
@@ -28,25 +27,15 @@ export default function TableInfo(props) {
         aria-label="simple table"
         className={style.fonTable}
       >
-        <TableHead>
-          <TableRow>
-            <TableCell align="right">
-              <strong>EmpID</strong>
+        { 
+          props.headerArr.map((header,i)=>(
+            <TableCell key={i} align="right">
+              <strong>{header}</strong>
             </TableCell>
-            <TableCell align="right">
-              <strong>ProjectID</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>DateFrom</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>DateTo</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>WorkDays</strong>
-            </TableCell>
-          </TableRow>
-        </TableHead>
+            
+          ))
+        }
+       
 
         <TableBody>
           {props.array.map((row) => (

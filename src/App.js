@@ -1,11 +1,11 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import Btn from "./components/Btn";
-import UploadIcon from "@mui/icons-material/Upload";
+import GetAppIcon from '@mui/icons-material/GetApp';
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import TableInfo from "./components/TableInfo";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
-import {fineMax, createPropertyWorkDays} from "./util";
+import { fineMax, createPropertyWorkDays, getKeysObject } from "./util";
 
 const useStyles = makeStyles({
   fon: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: "10px"
+    gap: "10px",
   },
   tableInformation: {
     width: "100%",
@@ -41,17 +41,17 @@ const useStyles = makeStyles({
 
 function App(props) {
   const style = useStyles();
-  const [viewfile, setviewFile] = React.useState(false);
   const [table, setTable] = React.useState(false);
+  const [tableAllInfo, setTableAllInfo] = React.useState(false);
   const [file, setFile] = React.useState();
   const [array, setArray] = React.useState([]);
   const fileReader = new FileReader();
   const fileInput = React.useRef(null);
 
-  const handleViewFile = () => {
-    viewfile ? setviewFile(false) : setviewFile(true);
-  };
   const viewResultTable = () => {
+    setTableAllInfo(true);
+  };
+  const viewResultTableLongestProject = () => {
     setTable(true);
   };
 
@@ -65,8 +65,7 @@ function App(props) {
     const headers = lines[0].split(",");
 
     for (let i = 1; i < lines.length; i++) {
-      if (!lines[i]) 
-      continue;
+      if (!lines[i]) continue;
       const obj = {};
       const currentline = lines[i].split(",");
 
@@ -91,44 +90,54 @@ function App(props) {
     }
   };
   createPropertyWorkDays(array);
+
   let maxDayOfProject = fineMax(array);
+
+  let headerArr = array.map((row) =>
+    getKeysObject(row).map((el) => {
+      return el;
+    })
+  )[0];
+
   return (
     <>
       <div className={style.fon}>
-      
-          <div className={style.input}>
-            <form
+        <div className={style.input}>
+          <form
+            onClick={() => {
+              fileInput.current.click();
+            }}
+          >
+            <input
+              onChange={handleOnChange}
+              type="file"
+              accept={".csv"}
+              ref={fileInput}
+              style={{ display: "none" }}
+            ></input>
+            <Btn name="Uplode File CSV" icon={<DriveFolderUploadIcon />}></Btn>
+          </form>
+          <div
             onClick={(ev) => {
-                fileInput.current.click();
-              }}
-            >
-              <input
-                onChange={handleOnChange}
-                type="file"
-                accept={".csv"}
-                ref={fileInput}
-                style={{ display: "none" }}
-              ></input>
-              <Btn
-                name="Uplode File CSV"
-                icon={<DriveFolderUploadIcon />}
-              ></Btn>
-            </form>
-            <div
-              onClick={(ev) => {
-                handleOnSubmit(ev);
-              }}
-            >
-              <Btn name="Import" icon={<UploadIcon />}></Btn>
-            </div>
+              handleOnSubmit(ev);
+              viewResultTable();
+            }}
+          >
+            <Btn name="Import" icon={<GetAppIcon />}/>
           </div>
-        
-        <h3 className={style.flex}>Table of all project</h3>
-        <TableInfo array={array} />
+        </div>
+        {tableAllInfo && (
+          <>
+            <h3 className={style.flex}>Table of all projects</h3>
+            {array.length !== 0 && (
+              <TableInfo array={array} headerArr={headerArr} />
+            )}
+          </>
+        )}
         <div
           className={style.flex}
           onClick={() => {
-            viewResultTable();
+            viewResultTableLongestProject();
           }}
         >
           <Btn name="Find the longest project" icon={<ZoomInIcon />} />
@@ -137,7 +146,7 @@ function App(props) {
         {table && (
           <>
             <h3 className={style.flex}>The longest working project</h3>
-            <TableInfo array={maxDayOfProject} />
+            <TableInfo array={maxDayOfProject} headerArr={headerArr} />
           </>
         )}
       </div>
